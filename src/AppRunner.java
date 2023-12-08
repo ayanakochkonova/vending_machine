@@ -1,7 +1,6 @@
 import enums.ActionLetter;
 import model.*;
-import util.UniversalArray;
-import util.UniversalArrayImpl;
+import util.*;
 
 import java.util.Scanner;
 
@@ -22,21 +21,49 @@ public class AppRunner {
                 new Mars(ActionLetter.F, 80),
                 new Pistachios(ActionLetter.G, 130)
         });
+
         coinAcceptor = new CoinAcceptor(100);
     }
 
     public static void run() {
         AppRunner app = new AppRunner();
         while (!isExit) {
-            app.startSimulation();
+            String poymentChoice = choosePaymentWay();
+            app.startSimulation(poymentChoice);
         }
     }
+    public static String choosePaymentWay(){
+        System.out.print("Выберите способ оплаты(1-карта, 2-монеты): ");
+        Scanner sc = new Scanner(System.in);
+        String choiceWay="";
+        try{
+            int choice = sc.nextInt();
+            if(choice == 1){
+                Terminal card = new ByCard();
+                card.pay();
+                choiceWay =  "На вашей карте: ";
+                return choiceWay;
+            }
+            else if(choice == 2){
+                Terminal coin = new ByCoin();
+                coin.pay();
+                choiceWay= "Монет на сумму: ";
+                return choiceWay;
+            }
+            else{
+                choosePaymentWay();
+            }
+        } catch(Exception e){
+            choosePaymentWay();
+        }
+        return choiceWay;
+    }
 
-    private void startSimulation() {
+    private void startSimulation(String str) {
         print("В автомате доступны:");
         showProducts(products);
 
-        print("Монет на сумму: " + coinAcceptor.getAmount());
+        print(str + coinAcceptor.getAmount());
 
         UniversalArray<Product> allowProducts = new UniversalArrayImpl<>();
         allowProducts.addAll(getAllowedProducts().toArray());
